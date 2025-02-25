@@ -1,4 +1,4 @@
-/* @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
 
 @import "tailwindcss";
 
@@ -18,10 +18,12 @@
     --font-home-heading-small-height: 34px;
     --font-default: 15px;
     --font-default-height: 21px;
+    --fonr-re: rgb(38, 0, 255);
+    --fonr-pe: purple;
   }
 }
 
-@layer components {
+@layer utilities {
   .course-details-heading-small {
     font-size: var(--font-detail-small);
     line-height: var(--font-detail-small-height);
@@ -33,13 +35,15 @@
   .text-home-heading-large {
     font-size: var(--font-home-heading-large);
     line-height: var(--font-home-heading-large-height);
+    color: var(--fonr-pe);
   }
   .text-home-heading-small {
     font-size: var(--font-home-heading-small);
+    color: var(--fonr-re);
     line-height: var(--font-home-heading-small-height);
   }
   .default {
     font-size: var(--font-default);
     line-height: var(--font-default-height);
   }
-} */
+}
