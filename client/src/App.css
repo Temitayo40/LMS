@@ -6,7 +6,7 @@
   font-family: Outfit;
 }
 
-@layer base {
+@layer theme {
   :root {
     --font-detail-large: 36px;
     --font-detail-large-height: 44px;
@@ -20,6 +20,7 @@
     --font-default-height: 21px;
     --fonr-re: rgb(38, 0, 255);
     --fonr-pe: purple;
+    /* --auto: "repeat(auto-fit, minmax(200px, 1fr )"; */
   }
 }
 
@@ -28,22 +29,97 @@
     font-size: var(--font-detail-small);
     line-height: var(--font-detail-small-height);
   }
+
   .course-details-heading-large {
     font-size: var(--font-detail-large);
     line-height: var(--font-detail-large-height);
   }
-  .text-home-heading-large {
-    font-size: var(--font-home-heading-large);
-    line-height: var(--font-home-heading-large-height);
+
+  .home-heading-large {
+    font-size: var(--font-home-heading-large) !important;
+    line-height: var(--font-home-heading-large-height) !important;
     color: var(--fonr-pe);
   }
-  .text-home-heading-small {
+
+  .home-heading-small {
     font-size: var(--font-home-heading-small);
     color: var(--fonr-re);
     line-height: var(--font-home-heading-small-height);
   }
+
   .default {
     font-size: var(--font-default);
     line-height: var(--font-default-height);
+  }
+
+  .auto {
+  }
+
+  /* Responsive Variants */
+  @media (min-width: 640px) {
+    .sm\:home-heading-large {
+      font-size: var(--font-home-heading-large) !important;
+      line-height: var(--font-home-heading-large-height) !important;
+    }
+
+    .sm\:home-heading-small {
+      font-size: var(--font-home-heading-small);
+      line-height: var(--font-home-heading-small-height);
+    }
+
+    .sm\:course-details-heading-large {
+      font-size: var(--font-detail-large);
+      line-height: var(--font-detail-large-height);
+    }
+
+    .sm\:course-details-heading-small {
+      font-size: var(--font-detail-small);
+      line-height: var(--font-detail-small-height);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .md\:home-heading-large {
+      font-size: var(--font-home-heading-large) !important;
+      line-height: var(--font-home-heading-large-height) !important;
+    }
+
+    .md\:home-heading-small {
+      font-size: var(--font-home-heading-small);
+      line-height: var(--font-home-heading-small-height);
+    }
+
+    .md\:course-details-heading-large {
+      font-size: var(--font-detail-large);
+      line-height: var(--font-detail-large-height);
+    }
+
+    .md\:course-details-heading-small {
+      font-size: var(--font-detail-small);
+      line-height: var(--font-detail-small-height);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .lg\:home-heading-large {
+      font-size: var(--font-home-heading-large) !important;
+      line-height: var(--font-home-heading-large-height) !important;
+      color: var(--fonr-pe);
+    }
+
+    .lg\:home-heading-small {
+      font-size: var(--font-home-heading-small);
+      line-height: var(--font-home-heading-small-height);
+    }
+
+    .lg\:course-details-heading-large {
+      font-size: var(--font-detail-large);
+      line-height: var(--font-detail-large-height);
+    }
+
+    .lg\:course-details-heading-small {
+      font-size: var(--font-detail-small);
+      line-height: var(--font-detail-small-height);
+    }
   }
 }
