@@ -2,9 +2,15 @@ import { useContext } from "react";
 import { assets } from "../../assets/assets";
 import { AppContext } from "../../context/AppContext";
 import { Link } from "react-router-dom";
+import { Course } from "../../Model/Courses";
 
-const CourseCard = ({ course }) => {
-  const { currency, calculateRating } = useContext(AppContext);
+const CourseCard = ({ course }: { course: Course }) => {
+  const context = useContext(AppContext);
+
+  if (!context) {
+    throw new Error("CourseSection must be used within an AppContextProvider");
+  }
+  const { currency, calculateRating } = context;
   return (
     <Link
       to={"/course/" + course._id}
@@ -14,7 +20,7 @@ const CourseCard = ({ course }) => {
       <img className="w-full" src={course.courseThumbnail} alt="" />
       <div className="p-3 text-left">
         <h3 className="text-base font-semiboldd">{course.courseTitle}</h3>
-        <p className="text-gray-500">{course.educator.name}</p>
+        {/* <p className="text-gray-500">{course.educator.name}</p> */}
         <div className="flex items-center space-x-2">
           <p>{calculateRating(course)}</p>
           <div className="flex">
@@ -26,7 +32,7 @@ const CourseCard = ({ course }) => {
                     : assets.star_blank
                 }
                 key={i}
-                alt=""
+                alt="star"
               />
             ))}
           </div>

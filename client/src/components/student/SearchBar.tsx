@@ -2,9 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { assets } from "../../assets/assets";
 import { useState } from "react";
 interface SearchBarProps {
-  data: string;
+  data?: string;
 }
-const SearchBar = (data: string) => {
+const SearchBar = ({ data }: SearchBarProps) => {
   const navigate = useNavigate();
   const [input, setInput] = useState(data ? data : "");
 

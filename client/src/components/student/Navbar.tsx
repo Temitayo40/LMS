@@ -8,7 +8,13 @@ const Navbar: React.FC = () => {
 
   const { openSignIn } = useClerk();
   const { user } = useUser();
-  const { navigate, isEducator } = useContext(AppContext);
+
+  const context = useContext(AppContext);
+
+  if (!context) {
+    throw new Error("CourseSection must be used within an AppContextProvider");
+  }
+  const { navigate, isEducator } = context;
 
   return (
     <div
