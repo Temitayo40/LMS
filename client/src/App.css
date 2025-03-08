@@ -19,6 +19,7 @@
     --font-default: 15px;
     --font-default-height: 21px;
     --fonr-re: rgb(38, 0, 255);
+    --section-height: 500px;
     --fonr-pe: purple;
     /* --auto: "repeat(auto-fit, minmax(200px, 1fr )"; */
   }
@@ -33,6 +34,9 @@
   .course-details-heading-large {
     font-size: var(--font-detail-large);
     line-height: var(--font-detail-large-height);
+  }
+  .section-height {
+    height: var(--section-height);
   }
 
   .home-heading-large {
@@ -76,6 +80,10 @@
       font-size: var(--font-detail-small);
       line-height: var(--font-detail-small-height);
     }
+    .sm\:default {
+      font-size: var(--font-default);
+      line-height: var(--font-default-height);
+    }
   }
 
   @media (min-width: 768px) {
@@ -97,6 +105,10 @@
     .md\:course-details-heading-small {
       font-size: var(--font-detail-small);
       line-height: var(--font-detail-small-height);
+    }
+    .md\:default {
+      font-size: var(--font-default);
+      line-height: var(--font-default-height);
     }
   }
 
@@ -120,6 +132,10 @@
     .lg\:course-details-heading-small {
       font-size: var(--font-detail-small);
       line-height: var(--font-detail-small-height);
+    }
+    .lg\:default {
+      font-size: var(--font-default);
+      line-height: var(--font-default-height);
     }
   }
 }

@@ -1,13 +1,16 @@
 import { createContext, useEffect, useState } from "react";
 import { dummyCourses } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
-import { Course, CourseRating, Courses } from "../Model/Courses";
-
+import { Course, CourseContent, CourseRating, Courses } from "../Model/Courses";
+import humanizedDuration from "humanize-duration";
 interface AppContextType {
   currency: string | undefined;
   allCourses: Courses;
   navigate: ReturnType<typeof useNavigate>;
   calculateRating: (course: Course) => number;
+  calculateNoOfLectures: (course: Course) => number;
+  calculateCourseDuration: (course: Course) => number;
+  calculateChapterTime: (Chapter: CourseContent) => number;
   isEducator: boolean;
   setIsEducator: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -39,6 +42,34 @@ export const AppContextProvider = (props: AppContextProviderProps) => {
     return totalRatings / course.courseRatings.length;
   };
 
+  // calculatre course chp time
+  const calculateChapterTime = (chapter: CourseContent) => {
+    let time = 0;
+    chapter.chapterContent.map((lecture) => (time += lecture.lectureDuration));
+    return humanizedDuration(time * 60 * 1000, { units: ["h", "m"] });
+  };
+
+  // to calacu;ate Course Duration
+  const calculateCourseDuration = (course: Course) => {
+    let time = 0;
+    course.courseContent.map((chapter) =>
+      chapter.chapterContent.map((lecture) => (time += lecture.lectureDuration))
+    );
+    return humanizedDuration(time * 60 * 1000, { units: ["h", "m"] });
+  };
+
+  //calculate numbe rof lecture in the course
+
+  const calculateNoOfLectures = (course: Course) => {
+    let totalLEcture = 0;
+    course.courseContent.forEach((chapter) => {
+      if (Array.isArray(chapter.chapterContent)) {
+        totalLEcture += chapter.chapterContent.length;
+      }
+    });
+    return totalLEcture;
+  };
+
   useEffect(() => {
     fetchAllCourses();
   }, []);
@@ -51,6 +82,9 @@ export const AppContextProvider = (props: AppContextProviderProps) => {
     calculateRating,
     isEducator,
     setIsEducator,
+    calculateNoOfLectures,
+    calculateCourseDuration,
+    calculateChapterTime,
   };
 
   return (
