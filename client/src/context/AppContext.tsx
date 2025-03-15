@@ -6,6 +6,7 @@ import humanizedDuration from "humanize-duration";
 interface AppContextType {
   currency: string | undefined;
   allCourses: Courses;
+  enrolledCourses: Courses;
   navigate: ReturnType<typeof useNavigate>;
   calculateRating: (course: Course) => number;
   calculateNoOfLectures: (course: Course) => number;
@@ -25,6 +26,7 @@ export const AppContextProvider = (props: AppContextProviderProps) => {
   const navigate = useNavigate();
   const [allCourses, setAllCourses] = useState<Courses>([]);
   const [isEducator, setIsEducator] = useState(true);
+  const [enrolledCourses, setEnrolledCourses] = useState<Courses>([]);
   const fetchAllCourses = async () => {
     setAllCourses(dummyCourses);
   };
@@ -70,8 +72,13 @@ export const AppContextProvider = (props: AppContextProviderProps) => {
     return totalLEcture;
   };
 
+  //fetch user Enrolled courses#
+  const fetchUserEnrolledCourses = async () => {
+    setEnrolledCourses(dummyCourses);
+  };
   useEffect(() => {
     fetchAllCourses();
+    fetchUserEnrolledCourses();
   }, []);
 
   const currency = import.meta.env.VITE_CURRENCY;
@@ -85,6 +92,9 @@ export const AppContextProvider = (props: AppContextProviderProps) => {
     calculateNoOfLectures,
     calculateCourseDuration,
     calculateChapterTime,
+    enrolledCourses,
+    setEnrolledCourses,
+    fetchUserEnrolledCourses,
   };
 
   return (

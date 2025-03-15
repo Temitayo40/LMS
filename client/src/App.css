@@ -6,6 +6,85 @@
   font-family: Outfit;
 }
 
+.rich-text {
+  font-size: 15px;
+  color: #7a7b7d;
+}
+
+.rich-text p {
+  margin-bottom: 16px;
+}
+
+.rich-text h1 {
+  font-size: 36px;
+  font-weight: 800;
+  color: #252525;
+  margin: 32px 0;
+}
+
+.rich-text h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #252525;
+  margin: 24px 0;
+}
+
+.rich-text h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333333;
+  margin: 20px 0;
+}
+
+.rich-text h4 {
+  font-size: 16px;
+  font-weight: 500;
+  color: #444444;
+  margin: 16px 0;
+}
+
+.rich-text h5 {
+  font-size: 14px;
+  font-weight: 400;
+  color: #555555;
+  margin: 12px 0;
+}
+
+.rich-text h6 {
+  font-size: 12px;
+  font-weight: 400;
+  color: #666666;
+  margin: 8px 0;
+}
+
+.rich-text strong {
+  font-weight: 700;
+}
+
+.rich-text ol {
+  margin-left: 30px;
+  list-style-type: decimal;
+}
+
+.rich-text ul {
+  margin-left: 30px;
+  list-style-type: disc;
+}
+
+.rich-text li {
+  margin-bottom: 8px;
+}
+
+.course-card {
+  width: 424px;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 @layer theme {
   :root {
     --font-detail-large: 36px;
@@ -18,9 +97,10 @@
     --font-home-heading-small-height: 34px;
     --font-default: 15px;
     --font-default-height: 21px;
-    --fonr-re: rgb(38, 0, 255);
     --section-height: 500px;
-    --fonr-pe: purple;
+    --course-card: 424px;
+    --custom-card: 0px 4px 15px 2px rgba(0, 0, 0, 0.1);
+
     /* --auto: "repeat(auto-fit, minmax(200px, 1fr )"; */
   }
 }
@@ -54,9 +134,6 @@
   .default {
     font-size: var(--font-default);
     line-height: var(--font-default-height);
-  }
-
-  .auto {
   }
 
   /* Responsive Variants */

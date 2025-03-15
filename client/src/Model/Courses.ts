@@ -31,6 +31,8 @@ export interface ChapterContent {
   lectureUrl: string;
   isPreviewFree: boolean;
   lectureOrder: number;
+  chapter?: number;
+  lecture?: number;
 }
 
 export interface CourseRating {

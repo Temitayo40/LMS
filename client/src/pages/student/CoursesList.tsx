@@ -21,7 +21,6 @@ const CoursesList = () => {
 
   useEffect(() => {
     const tempCourses = allCourses.slice();
-    // if filterdValues = () =>{}
     if (allCourses && allCourses.length > 0) {
       const filterdValue = id
         ? setFilteredCourse(

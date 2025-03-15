@@ -5,11 +5,17 @@ import { Course, Courses } from "../../Model/Courses";
 import Loading from "../../components/student/Loading";
 import { assets } from "../../assets/assets";
 import humanizedDuration from "humanize-duration";
+import Footer from "../../components/student/Footer";
+import YouTube from "react-youtube";
 
 const CourseDetails = () => {
   const context = useContext(AppContext);
   const [courseData, setCourseData] = useState<Course>();
   const [openSection, setOpenSection] = useState<number[]>([]);
+  const [alreadyEnrolled, setAlreadyEnrolled] = useState<boolean>(false);
+  const [playerData, setPlayerData] = useState<{ videoId: string } | null>(
+    null
+  );
 
   if (!context) {
     throw new Error("CoursesList must be used within an AppContextProvider");
@@ -24,6 +30,7 @@ const CourseDetails = () => {
     calculateChapterTime,
     calculateCourseDuration,
     calculateNoOfLectures,
+    currency,
   } = context;
 
   const fetchCourseData = async () => {
@@ -33,7 +40,7 @@ const CourseDetails = () => {
 
   useEffect(() => {
     fetchCourseData();
-  }, []);
+  }, [allCourses]);
 
   const toggleSection = (index: number) => {
     setOpenSection((prev) => ({
@@ -99,7 +106,13 @@ const CourseDetails = () => {
                     onClick={() => toggleSection(index)}
                   >
                     <div className="flex items-center gap-2">
-                      <img src={assets.down_arrow_icon} alt="arrow icon" />
+                      <img
+                        className={`transform transition-transform ${
+                          openSection[index] ? "rotate-180" : ""
+                        }`}
+                        src={assets.down_arrow_icon}
+                        alt="arrow icon"
+                      />
                       <p className="font-medium md:default">
                         {chapter.chapterTitle}
                       </p>
@@ -126,7 +139,16 @@ const CourseDetails = () => {
                             <p className="">{lecture.lectureTitle}</p>
                             <div className="flex gap-2">
                               {lecture.isPreviewFree && (
-                                <p className="text-blue-500 cursor-pointer">
+                                <p
+                                  className="text-blue-500 cursor-pointer"
+                                  onClick={() =>
+                                    setPlayerData({
+                                      videoId: lecture.lectureUrl
+                                        .split("/")
+                                        .pop(),
+                                    })
+                                  }
+                                >
                                   Preview
                                 </p>
                               )}
@@ -145,11 +167,99 @@ const CourseDetails = () => {
                 </div>
               ))}
             </div>
+
+            <div className="py-20 text-sm md:text-default">
+              <h3 className="text-xl font-semibold text-gray-800">
+                Course Description
+              </h3>
+              <p
+                className="pt-3 rich-text"
+                dangerouslySetInnerHTML={{
+                  __html: courseData.courseDescription,
+                }}
+              ></p>
+            </div>
           </div>
         </div>
         {/* right column */}
-        <div></div>
+        <div className="max-w-[var(--course-card)] z-10 shadow-[var(--custom-card)] rounded-t md:rounded-none overflow-hidden bh-white min-w-[300px] sm:min-w-[420px]">
+          {playerData ? (
+            <YouTube
+              videoId={playerData.videoId}
+              opts={{ playerVars: { autoplay: 1 } }}
+              iframeClassName="w-full aspect-video"
+            />
+          ) : (
+            <img src={courseData.courseThumbnail} alt="" />
+          )}
+          <div className="p-5">
+            <div className="flex items-center gap-2">
+              <img
+                src={assets.time_left_clock_icon}
+                alt="time_left_clock_item"
+                className="w-3.5"
+              />
+
+              <p className="text-red-500">
+                {" "}
+                <span className="font-medium">5 days </span>left at this price
+              </p>
+            </div>
+            <div className="flex gap-3 item-center pt-2">
+              <p className="text-gray-800 md:text-4xl text-2xl font-semibold">
+                {currency}{" "}
+                {(
+                  courseData.coursePrice -
+                  (courseData.discount * courseData.coursePrice) / 100
+                ).toFixed(2)}
+              </p>
+              <p className="md:text-lg text-gray-500 line-through">
+                {currency} {courseData.coursePrice}
+              </p>
+              <p className="md:text-lg text-gray-500">
+                {courseData.discount}% off
+              </p>
+            </div>
+            <div className="flex items-center text-sm md:text-default gap-4 pt-2 md:pt-4 text-gray-500">
+              <div className="flex items-center gap-1">
+                <img src={assets.star} alt="start icon" />
+                <p>{calculateRating(courseData)}</p>
+              </div>
+
+              <div className="h-3 w-px bg-gray-500/40"></div>
+
+              <div className="flex items-center gap-1">
+                <img src={assets.time_clock_icon} alt="clock icon" />
+                <p>{calculateRating(courseData)}</p>
+              </div>
+
+              <div className="h-3 w-px bg-gray-500/40"></div>
+
+              <div className="flex items-center gap-1">
+                <img src={assets.lesson_icon} alt="clock icon" />
+                <p>{calculateNoOfLectures(courseData)} lessons</p>
+              </div>
+            </div>
+
+            <button className="w-full md:mt-6 mt-4 py-3 rounded bg-blue-600 text-white font-medium">
+              {alreadyEnrolled ? "Already Enroll" : "Enrolll Now"}
+            </button>
+            <div className="pt-6">
+              <p className="md:text-xl text-lg font-medium text-gray-800">
+                what's in the course?
+              </p>
+              <ul className="ml-4 pt-2 text-sm md:default list-disc text-gray-500">
+                <li>lifetime access with free updates</li>
+                <li>step-by-step, hands-on project guidance</li>
+                <li>Downloadable resources and source code</li>
+                <li>Quizzes to test your Knowledge</li>
+                <li>Certificate to completion</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
+      <Footer />
     </>
   ) : (
     <Loading />
