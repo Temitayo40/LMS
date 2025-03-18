@@ -1,5 +1,5 @@
 import { Courses } from "../Model/Courses";
-import { Testimonials } from "../Model/Testimonials";
+import { Testimonials } from "../Model/Testimonials.ts";
 import accenture_logo from "./accenture_logo.svg";
 import add_icon from "./add_icon.svg";
 import adobe_logo from "./adobe_logo.svg";

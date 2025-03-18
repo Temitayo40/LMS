@@ -2,16 +2,17 @@ import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import { assets, dummyDashboardData } from "../../assets/assets";
 import Loading from "../../components/student/Loading";
+import {DashboardModel} from "../../Model/DashboardModel.ts";
 
 const Dashboard = () => {
   const context = useContext(AppContext);
 
   if (!context) {
-    throw new Error("Dashboard must be used within an AppContextProvider");
+    throw new Error("DashboardModel must be used within an AppContextProvider");
   }
 
-  const { currency } = context;
-  const [dashboardData, setDashboardData] = useState();
+  // const { currency } = context;
+  const [dashboardData, setDashboardData] = useState<DashboardModel>();
 
   const fetchDashboardData = async () => {
     setDashboardData(dummyDashboardData);

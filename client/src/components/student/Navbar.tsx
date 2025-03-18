@@ -37,7 +37,7 @@ const Navbar: React.FC = () => {
                   navigate("/educator");
                 }}
               >
-                {isEducator ? "Educator Dashboard" : "Become Educator"}
+                {isEducator ? "Educator DashboardModel" : "Become Educator"}
               </button>
               | <Link to="/my-enrollments">My Enrollments</Link>
             </>
@@ -65,7 +65,7 @@ const Navbar: React.FC = () => {
                   navigate("/educator");
                 }}
               >
-                {isEducator ? "Educator Dashboard" : "Become Educator"}
+                {isEducator ? "Educator DashboardModel" : "Become Educator"}
               </button>
               | <Link to="/my-enrollments">My Enrollments</Link>
             </>

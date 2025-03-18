@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { dummyStudentEnrolled } from "../../assets/assets";
 import Loading from "../../components/student/Loading";
+import {EnrolledStudents} from "../../Model/StudentEnrolled.ts";
 
 const StudentsEnrolled = () => {
-  const [enrolledStudents, setEnrolledStundents] = useState(null);
+  const [enrolledStudents, setEnrolledStundents] = useState<EnrolledStudents>();
 
   const fetchEnrolledStudents = async () => {
     setEnrolledStundents(dummyStudentEnrolled);

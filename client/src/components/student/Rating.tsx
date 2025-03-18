@@ -29,7 +29,7 @@ const Rating = ({ initialRating, onRate }: RatingProp) => {
             }`}
             onClick={() => handleRating(startValue)}
           >
-            &#9733
+            &#9733;
           </span>
         );
       })}
