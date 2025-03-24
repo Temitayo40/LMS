@@ -85,7 +85,7 @@ export const AppContextProvider = (props: AppContextProviderProps) => {
   }, []);
 
   const logToken = async () => {
-    console.log(await useAuth());
+    console.log(await getToken());
   };
   useEffect(() => {
     if (user) {
