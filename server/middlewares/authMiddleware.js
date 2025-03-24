@@ -1,5 +1,7 @@
 // middleware protect educator route
 
+import { clerkClient } from "@clerk/express";
+
 export const protectEducator = async (req, res, next) => {
   try {
     const userId = req.auth.userId;
