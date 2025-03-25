@@ -55,6 +55,7 @@ export const addCourse = async (req, res) => {
 export const getEducatorCourses = async (req, res) => {
   try {
     const educatorId = req.auth.userId;
+    // console.log(req.auth);
 
     const courses = await Course.find({ educator: educatorId });
 
