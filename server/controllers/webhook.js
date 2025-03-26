@@ -67,7 +67,7 @@ export const stripeWebhooks = async (request, response) => {
   let event;
 
   try {
-    event = stripeInstance.webhooks.constructEvent(
+    event = Stripe.webhooks.constructEvent(
       request.body,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET
@@ -78,36 +78,34 @@ export const stripeWebhooks = async (request, response) => {
 
   switch (event.type) {
     // case "payment_intent.succeeded": {
-    //   const paymentIntent = event.data.object;
-    //   const paymentIntentId = paymentIntent.id;
+    //   (async () => {
+    //     const paymentIntent = event.data.object;
+    //     const paymentIntentId = paymentIntent.id;
 
-    //   const session = await stripeInstance.checkout.sessions.list({
-    //     payment_intent: paymentIntentId,
-    //   });
+    //     const session = await stripeInstance.checkout.sessions.list({
+    //       payment_intent: paymentIntentId,
+    //     });
 
-    //   if (!session.data.length || !session.data[0].metadata) {
-    //     return response.status(400).json({ error: "Session metadata missing" });
-    //   }
+    //     const { purchaseId } = session.data[0].metadata;
+    //     const purchaseData = await Purchase.findById(purchaseId);
+    //     const userData = await User.findById(purchaseData.userId);
+    //     const courseData = await Course.findById(
+    //       purchaseData.courseId.toString()
+    //     );
 
-    //   const { purchaseId } = session.data[0].metadata;
-    //   const purchaseData = await Purchase.findById(purchaseId);
-    //   const userData = await User.findById(purchaseData.userId);
-    //   const courseData = await Course.findById(
-    //     purchaseData.courseId.toString()
-    //   );
+    //     courseData.enrolledStudents.push(userData);
+    //     await courseData.save();
 
-    //   courseData.enrolledStudents.push(userData);
-    //   await courseData.save();
+    //     userData.enrolledCourses.push(courseData);
+    //     await userData.save();
 
-    //   userData.enrolledCourses.push(courseData);
-    //   await userData.save();
-
-    //   purchaseData.status = "completed";
-    //   await purchaseData.save();
+    //     purchaseData.status = "completed";
+    //     await purchaseData.save();
+    //   })().catch((err) => console.error(err));
     //   break;
     // }
     case "payment_intent.succeeded": {
-      (async () => {
+      try {
         const paymentIntent = event.data.object;
         const paymentIntentId = paymentIntent.id;
 
@@ -115,39 +113,31 @@ export const stripeWebhooks = async (request, response) => {
           payment_intent: paymentIntentId,
         });
 
+        if (!session.data.length || !session.data[0].metadata) {
+          console.error("Metadata is missing in session data");
+          return response
+            .status(400)
+            .json({ error: "Session metadata missing" });
+        }
+
         const { purchaseId } = session.data[0].metadata;
         const purchaseData = await Purchase.findById(purchaseId);
-        const userData = await User.findById(purchaseData.userId);
-        const courseData = await Course.findById(
-          purchaseData.courseId.toString()
-        );
 
-        courseData.enrolledStudents.push(userData);
-        await courseData.save();
+        if (!purchaseData) {
+          console.error(`No purchase found with ID: ${purchaseId}`);
+          return response.status(404).json({ error: "Purchase not found" });
+        }
 
-        userData.enrolledCourses.push(courseData);
-        await userData.save();
-
+        console.log("Before update:", purchaseData.status);
         purchaseData.status = "completed";
         await purchaseData.save();
-      })().catch((err) => console.error(err));
+        console.log("After update:", purchaseData.status);
+      } catch (err) {
+        console.error("Error processing payment_intent.succeeded:", err);
+      }
       break;
     }
-    // case "payment_intent.payment_failed": {
-    //   const paymentIntent = event.data.object;
-    //   const paymentIntentId = paymentIntent.id;
 
-    //   const session = await stripeInstance.checkout.sessions.list({
-    //     payment_intent: paymentIntentId,
-    //   });
-
-    //   const { purchaseId } = session.data[0].metadata;
-
-    //   const purchaseData = await Purchase.findById(purchaseId);
-    //   purchaseData.status = "failed";
-    //   await purchaseData.save();
-    //   break;
-    // }
     case "payment_intent.payment_failed": {
       (async () => {
         try {
@@ -183,3 +173,49 @@ export const stripeWebhooks = async (request, response) => {
   // Return a response to acknowledge receipt of the event
   response.json({ received: true });
 };
+
+// case "payment_intent.succeeded": {
+//   const paymentIntent = event.data.object;
+//   const paymentIntentId = paymentIntent.id;
+
+//   const session = await stripeInstance.checkout.sessions.list({
+//     payment_intent: paymentIntentId,
+//   });
+
+//   if (!session.data.length || !session.data[0].metadata) {
+//     return response.status(400).json({ error: "Session metadata missing" });
+//   }
+
+//   const { purchaseId } = session.data[0].metadata;
+//   const purchaseData = await Purchase.findById(purchaseId);
+//   const userData = await User.findById(purchaseData.userId);
+//   const courseData = await Course.findById(
+//     purchaseData.courseId.toString()
+//   );
+
+//   courseData.enrolledStudents.push(userData);
+//   await courseData.save();
+
+//   userData.enrolledCourses.push(courseData);
+//   await userData.save();
+
+//   purchaseData.status = "completed";
+//   await purchaseData.save();
+//   break;
+// }
+
+// case "payment_intent.payment_failed": {
+//   const paymentIntent = event.data.object;
+//   const paymentIntentId = paymentIntent.id;
+
+//   const session = await stripeInstance.checkout.sessions.list({
+//     payment_intent: paymentIntentId,
+//   });
+
+//   const { purchaseId } = session.data[0].metadata;
+
+//   const purchaseData = await Purchase.findById(purchaseId);
+//   purchaseData.status = "failed";
+//   await purchaseData.save();
+//   break;
+// }
