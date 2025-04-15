@@ -3,6 +3,8 @@ import { assets } from "../../assets/assets";
 import { Link } from "react-router-dom";
 import { useClerk, UserButton, useUser } from "@clerk/clerk-react";
 import { AppContext } from "../../context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
 const Navbar: React.FC = () => {
   const isCourseListPage = location.pathname.includes("/course-list");
 
@@ -14,7 +16,35 @@ const Navbar: React.FC = () => {
   if (!context) {
     throw new Error("CourseSection must be used within an AppContextProvider");
   }
-  const { navigate, isEducator } = context;
+  const { navigate, isEducator, backendUrl, setIsEducator, getToken } = context;
+
+  const becomeEducator = async () => {
+    try {
+      if (isEducator) {
+        navigate("/educator");
+        return;
+      }
+
+      const token = await getToken();
+      const { data } = await axios.get(
+        backendUrl + "/api/educator/update-role",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (data.success) {
+        setIsEducator(true);
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
+    }
+  };
 
   return (
     <div
@@ -32,11 +62,7 @@ const Navbar: React.FC = () => {
         <div className="flex items-center gap-5">
           {user && (
             <>
-              <button
-                onClick={() => {
-                  navigate("/educator");
-                }}
-              >
+              <button onClick={becomeEducator}>
                 {isEducator ? "Educator DashboardModel" : "Become Educator"}
               </button>
               | <Link to="/my-enrollments">My Enrollments</Link>
@@ -60,11 +86,7 @@ const Navbar: React.FC = () => {
         <div className="flex items-center gap-1 sm:gap-2 max-sm:text-xs">
           {user && (
             <>
-              <button
-                onClick={() => {
-                  navigate("/educator");
-                }}
-              >
+              <button onClick={becomeEducator}>
                 {isEducator ? "Educator DashboardModel" : "Become Educator"}
               </button>
               | <Link to="/my-enrollments">My Enrollments</Link>

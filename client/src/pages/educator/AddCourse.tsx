@@ -1,10 +1,22 @@
 import Quill from "quill";
-import { RefObject, useEffect, useRef, useState } from "react";
+import { RefObject, useContext, useEffect, useRef, useState } from "react";
 import uniqid from "uniqid";
 import { assets } from "../../assets/assets";
 import { Chapter, Lecture, LectureDetails } from "../../Model/AddCourses";
+import { AppContext } from "../../context/AppContext";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { handleError } from "../../lib/Error";
 
 const AddCourse = () => {
+  const context = useContext(AppContext);
+
+  if (!context) {
+    throw new Error("CoursesList must be used within an AppContextProvider");
+  }
+
+  const { backendUrl, getToken } = context;
+
   const quilRef: RefObject<any> = useRef(null);
   const editorRef: RefObject<any> = useRef(null);
 
@@ -15,7 +27,7 @@ const AddCourse = () => {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [showPopup, setShowPopup] = useState(false);
 
-  const [currentChapterId, setCurrentChapterId] = useState<number>();
+  const [currentChapterId, setCurrentChapterId] = useState<string>();
   const [lectureDetails, setLectureDetails] = useState<LectureDetails>({
     lectureTitle: "",
     lectureDuration: "",
@@ -23,7 +35,7 @@ const AddCourse = () => {
     isPreviewFree: false,
   });
 
-  const handleChapter = (action: string, chapterId?: number) => {
+  const handleChapter = (action: string, chapterId?: string) => {
     if (action === "add") {
       const title = prompt("Enter Chapter Name");
       if (title) {
@@ -42,11 +54,11 @@ const AddCourse = () => {
       }
     } else if (action === "remove") {
       setChapters(
-        chapters.filter((chapter: any) => chapter.chapterId !== chapterId)
+        chapters.filter((chapter: Chapter) => chapter.chapterId !== chapterId)
       );
     } else if (action === "toggle") {
       setChapters(
-        chapters.map((chapter: any) =>
+        chapters.map((chapter: Chapter) =>
           chapter.chapterId === chapterId
             ? { ...chapter, collapsed: !chapter.collapsed }
             : chapter
@@ -57,17 +69,20 @@ const AddCourse = () => {
 
   const handleLecture = (
     action: string,
-    chapterId: number,
+    chapterId: string,
     lectureIndex?: number
   ) => {
     if (action === "add") {
       setCurrentChapterId(chapterId);
+      console.log(chapterId, "chapterId");
       setShowPopup(true);
     } else if (action === "remove") {
       setChapters(
-        chapters.map((chapter: any) => {
+        chapters.map((chapter: Chapter) => {
           if (chapter.chapterId === chapterId) {
-            chapter.chapterContent.splice(lectureIndex, 1);
+            if (lectureIndex !== undefined) {
+              chapter.chapterContent.splice(lectureIndex, 1);
+            }
           }
           return chapter;
         })
@@ -101,8 +116,50 @@ const AddCourse = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    try {
+      e.preventDefault();
+      if (!image) {
+        toast.error("Thumbnail Not Selected");
+      }
+
+      const courseData = {
+        courseTitle,
+        courseDescription: quilRef.current.root.innerHTML,
+        coursePrice: Number(coursePrice),
+        discount: Number(discount),
+        courseContent: chapters,
+      };
+
+      const formData = new FormData();
+      formData.append("courseData", JSON.stringify(courseData));
+      formData.append("image", image);
+
+      const token = await getToken();
+      const { data } = await axios.post(
+        backendUrl + "/api/educator/add-course",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        setCourseTitle("");
+        setCoursePrice(0);
+        setDiscount(0);
+        setImage(null);
+        setChapters([]);
+        quilRef.current.root.innerHTML = "";
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error: unknown) {
+      handleError(error);
+    }
   };
 
   useEffect(() => {

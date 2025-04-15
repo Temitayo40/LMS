@@ -1,61 +1,65 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import { Line } from "rc-progress";
 import Footer from "../../components/student/Footer";
+import { data } from "react-router-dom";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const MyEnrollment = () => {
   const context = useContext(AppContext);
 
-  const [progressArray, setProgressArray] = useState([
-    {
-      lectureCompleted: 2,
-      totalecture: 4,
-    },
-    {
-      lectureCompleted: 1,
-      totalecture: 5,
-    },
-    {
-      lectureCompleted: 2,
-      totalecture: 6,
-    },
-    {
-      lectureCompleted: 3,
-      totalecture: 7,
-    },
-    {
-      lectureCompleted: 2,
-      totalecture: 6,
-    },
-    {
-      lectureCompleted: 0,
-      totalecture: 9,
-    },
-    {
-      lectureCompleted: 3,
-      totalecture: 4,
-    },
-    {
-      lectureCompleted: 7,
-      totalecture: 7,
-    },
-    {
-      lectureCompleted: 4,
-      totalecture: 10,
-    },
-    {
-      lectureCompleted: 2,
-      totalecture: 10,
-    },
-    {
-      lectureCompleted: 2,
-      totalecture: 4,
-    },
-  ]);
+  const [progressArray, setProgressArray] = useState<any>([]);
 
   if (!context) throw new Error("Can't use context outside of it's context");
 
-  const { enrolledCourses, calculateCourseDuration, navigate } = context;
+  const {
+    enrolledCourses,
+    calculateCourseDuration,
+    navigate,
+    userData,
+    fetchUserEnrolledCourses,
+    backendUrl,
+    getToken,
+    calculateNoOfLectures,
+  } = context;
+
+  const getCourseProgress = async () => {
+    try {
+      const token = await getToken();
+      const tempProgressArray = await Promise.all(
+        enrolledCourses.map(async (course) => {
+          const { data } = await axios.post(
+            `${backendUrl}/api/user/get-course-progress`,
+            { courseId: course._id },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          const totalLectures = calculateNoOfLectures(course);
+          const lectureCompleted = data.progressData
+            ? data.progressData.lectureCompleted.length
+            : 0;
+
+          return { totalLectures, lectureCompleted };
+        })
+      );
+
+      setProgressArray(tempProgressArray);
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (userData) {
+      fetchUserEnrolledCourses();
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    if (enrolledCourses.length > 0) {
+      getCourseProgress();
+    }
+  }, [enrolledCourses]);
   return (
     <>
       <div className="md:px-36 px-8 pt-10">

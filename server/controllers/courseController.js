@@ -18,8 +18,8 @@ export const getCourseById = async (req, res) => {
     // console.log(courseData);
 
     //remove lectureUrl if isPreview is false
-    courseData.courseContent.forEach((content) => {
-      //  const newData = Array.isArray(content.chapterContent);
+    courseData.courseContent.forEach(() => {
+      //  const newData = Array.isArray(content.appchapterContent);
       content.chapterContent.forEach((lecture) => {
         if (!lecture.isPreviewFree) {
           lecture.lectureUrl = "";

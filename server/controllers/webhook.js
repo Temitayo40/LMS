@@ -68,6 +68,7 @@ export const stripeWebhooks = async (request, response) => {
   let event;
 
   try {
+    //check if this should be strip of stripInstance.
     event = Stripe.webhooks.constructEvent(
       request.body,
       sig,

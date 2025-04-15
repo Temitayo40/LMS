@@ -2,7 +2,11 @@ import mongoose from "mongoose";
 
 const purchaseSchema = new mongoose.Schema(
   {
-    courseId: { type: mongoose.Types.ObjectId, required: true, ref: "Course" },
+    courseId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "Course",
+    },
     userId: { type: String, required: true, ref: "User" },
     amount: { type: Number, required: true },
     status: {

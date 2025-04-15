@@ -34,11 +34,11 @@ export const userEnrolledCourses = async (req, res) => {
 export const purchaseData = async (req, res) => {
   try {
     const { courseId } = req.body;
-    const userId = req.auth.userId;
     const { origin } = req.headers;
+    const userId = req.auth.userId;
 
-    const courseData = await Course.findById(courseId);
     const userData = await User.findById(userId);
+    const courseData = await Course.findById(courseId);
 
     if (!userData || !courseData) {
       return res

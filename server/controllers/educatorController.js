@@ -54,7 +54,7 @@ export const addCourse = async (req, res) => {
 // get Educator  courses
 export const getEducatorCourses = async (req, res) => {
   try {
-    const educatorId = req.auth.userId;
+    const educator = req.auth.userId;
     // console.log(req.auth);
 
     const courses = await Course.find({ educator: educatorId });
@@ -75,6 +75,7 @@ export const educatorDashboardData = async (req, res) => {
     const courseIds = courses.map((course) => course._id);
     const purchases = await Purchase.find({
       courseId: { $in: courseIds },
+      status: "completed",
     });
     const totalEarnings = purchases.reduce(
       (total, purchase) => total + purchase.amount,
@@ -124,7 +125,7 @@ export const educatorDashboardData = async (req, res) => {
   }
 };
 
-// get Enrollled Students Data with Purchase Data
+// get Enrollled Students Data with Purchase   Data
 export const getEnrolledStudentsData = async (req, res) => {
   try {
     const educator = req.auth.userId;
@@ -141,7 +142,7 @@ export const getEnrolledStudentsData = async (req, res) => {
 
     const enrolledStudents = purchases.map((purchase) => ({
       student: purchase.userId,
-      courseTitle: purchase.courseTitle,
+      courseTitle: purchase.courseId.courseTitle,
       purchaseDate: purchase.createdAt,
     }));
 

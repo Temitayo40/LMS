@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 interface RatingProp {
   initialRating: number;
-  onRate?: (value: number) => number;
+  onRate?: (rating: any) => Promise<void>;
 }
 const Rating = ({ initialRating, onRate }: RatingProp) => {
   const [rating, setRating] = useState(initialRating || 0);

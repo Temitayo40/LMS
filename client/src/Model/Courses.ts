@@ -8,11 +8,12 @@ export interface Course {
   isPublished: boolean;
   discount: number;
   courseContent: CourseContent[];
-  educator: string;
+  educator: { name: string };
   enrolledStudents: string[];
   courseRatings: CourseRating[];
   createdAt: string;
   updatedAt: string;
+
   __v: number;
   courseThumbnail: string;
 }

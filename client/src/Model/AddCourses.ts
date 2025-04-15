@@ -6,7 +6,7 @@ export interface LectureDetails {
 }
 
 export interface Chapter {
-  chapterId: number;
+  chapterId: string;
   chapterTitle: string;
   chapterContent: Lecture[];
   collapsed: boolean;

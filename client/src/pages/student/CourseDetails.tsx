@@ -1,21 +1,26 @@
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import { useParams } from "react-router-dom";
-import { Course, Courses } from "../../Model/Courses";
+import { Course } from "../../Model/Courses";
 import Loading from "../../components/student/Loading";
 import { assets } from "../../assets/assets";
 import humanizedDuration from "humanize-duration";
 import Footer from "../../components/student/Footer";
 import YouTube from "react-youtube";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { handleError } from "../../lib/Error";
 
 const CourseDetails = () => {
   const context = useContext(AppContext);
   const [courseData, setCourseData] = useState<Course>();
-  const [openSection, setOpenSection] = useState<number[]>([]);
+  // const [openSection, setOpenSection] = useState<number[]>([]);
+  const [openSection, setOpenSection] = useState<Record<number, boolean>>({});
+
   const [alreadyEnrolled, setAlreadyEnrolled] = useState<boolean>(false);
-  const [playerData, setPlayerData] = useState<{ videoId: string } | null>(
-    null
-  );
+  const [playerData, setPlayerData] = useState<{
+    videoId: string | undefined;
+  }>();
 
   if (!context) {
     throw new Error("CoursesList must be used within an AppContextProvider");
@@ -24,23 +29,65 @@ const CourseDetails = () => {
   const { id } = useParams();
 
   const {
-    navigate,
-    allCourses,
     calculateRating,
     calculateChapterTime,
-    calculateCourseDuration,
     calculateNoOfLectures,
     currency,
+    backendUrl,
+    userData,
+    getToken,
   } = context;
 
   const fetchCourseData = async () => {
-    const findCourse = allCourses.find((course) => course._id === id);
-    setCourseData(() => findCourse);
+    try {
+      const { data } = await axios.get(backendUrl + "/api/course/" + id);
+      if (data.success) {
+        setCourseData(data.courseData);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error: unknown) {
+      handleError(error);
+    }
+  };
+
+  const enrollCourse = async () => {
+    try {
+      if (!userData) {
+        return toast.warn("Login to Enroll");
+      }
+      if (alreadyEnrolled) {
+        return toast.warn("Already Enrolled");
+      }
+
+      const token = await getToken();
+
+      const { data } = await axios.post(
+        backendUrl + "/api/user/purchase",
+        { courseId: courseData?._id },
+        { headers: { Authorization: "Bearer " + token } }
+      );
+
+      if (data.success) {
+        const { session_url } = data;
+        window.location.replace(session_url);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error: unknown) {
+      handleError(error);
+    }
   };
 
   useEffect(() => {
     fetchCourseData();
-  }, [allCourses]);
+  }, []);
+
+  useEffect(() => {
+    if (userData && courseData) {
+      setAlreadyEnrolled(userData.enrolledCourses.includes(courseData._id));
+    }
+  }, [userData, courseData]);
 
   const toggleSection = (index: number) => {
     setOpenSection((prev) => ({
@@ -90,7 +137,10 @@ const CourseDetails = () => {
             </p>
           </div>
           <p className="text-sm">
-            Course by <span className="text-blue-600 underline">FreeRealm</span>
+            Course by{" "}
+            <span className="text-blue-600 underline">
+              {courseData.educator.name}
+            </span>
           </p>
           <div className="pt-5">
             <h2 className="text-xl font-semibold">Course Structure</h2>
@@ -241,7 +291,10 @@ const CourseDetails = () => {
               </div>
             </div>
 
-            <button className="w-full md:mt-6 mt-4 py-3 rounded bg-blue-600 text-white font-medium">
+            <button
+              onClick={enrollCourse}
+              className="w-full md:mt-6 mt-4 py-3 rounded bg-blue-600 text-white font-medium"
+            >
               {alreadyEnrolled ? "Already Enroll" : "Enrolll Now"}
             </button>
             <div className="pt-6">

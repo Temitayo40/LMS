@@ -1,9 +1,12 @@
 import { createContext, useEffect, useState } from "react";
-import { dummyCourses } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import { Course, CourseContent, CourseRating, Courses } from "../Model/Courses";
 import humanizedDuration from "humanize-duration";
 import { useAuth, useUser } from "@clerk/clerk-react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { handleError } from "../lib/Error";
+import { UserInterface } from "../Model/User";
 interface AppContextType {
   currency: string | undefined;
   allCourses: Courses;
@@ -12,9 +15,16 @@ interface AppContextType {
   calculateRating: (course: Course) => number;
   calculateNoOfLectures: (course: Course) => number;
   calculateCourseDuration: (course: Course) => number;
-  calculateChapterTime: (Chapter: CourseContent) => number;
+  calculateChapterTime: (chapter: CourseContent) => string;
   isEducator: boolean;
   setIsEducator: React.Dispatch<React.SetStateAction<boolean>>;
+  setEnrolledCourses: React.Dispatch<React.SetStateAction<Courses>>;
+  fetchUserEnrolledCourses: () => Promise<void>;
+  backendUrl: string;
+  userData: UserInterface;
+  setUserData: React.Dispatch<React.SetStateAction<UserInterface>>;
+  getToken: () => Promise<string | null>;
+  fetchAllCourses: () => Promise<void>;
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -24,14 +34,49 @@ interface AppContextProviderProps {
 }
 
 export const AppContextProvider = (props: AppContextProviderProps) => {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
   const { getToken } = useAuth();
   const { user } = useUser();
   const [allCourses, setAllCourses] = useState<Courses>([]);
   const [isEducator, setIsEducator] = useState(true);
   const [enrolledCourses, setEnrolledCourses] = useState<Courses>([]);
+  const [userData, setUserData] = useState<UserInterface>({} as UserInterface);
+
+  // fetch All courses
   const fetchAllCourses = async () => {
-    setAllCourses(dummyCourses);
+    try {
+      const { data } = await axios.get(backendUrl + "/api/course/all");
+      if (data.success) {
+        setAllCourses(data.courses);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error: unknown) {
+      handleError(error);
+    }
+  };
+
+  // Fetch User Data
+  const fetchUserData = async () => {
+    if (user?.publicMetadata.role === "educator") {
+      setIsEducator(true);
+    }
+    try {
+      const token = await getToken();
+
+      const { data } = await axios.get(backendUrl + "/api/user/data", {
+        headers: { Authorization: "Bearer " + token },
+      });
+
+      if (data.success) {
+        setUserData(data.user);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error: unknown) {
+      handleError(error);
+    }
   };
 
   const calculateRating = (course: Course) => {
@@ -44,7 +89,7 @@ export const AppContextProvider = (props: AppContextProviderProps) => {
       totalRatings += ratings.rating;
     });
 
-    return totalRatings / course.courseRatings.length;
+    return Math.floor(totalRatings / course.courseRatings.length);
   };
 
   // calculatre course chp time
@@ -60,7 +105,7 @@ export const AppContextProvider = (props: AppContextProviderProps) => {
     course.courseContent.map((chapter) =>
       chapter.chapterContent.map((lecture) => (time += lecture.lectureDuration))
     );
-    return humanizedDuration(time * 60 * 1000, { units: ["h", "m"] });
+    return time; // Return duration in minutes as a number
   };
 
   //calculate numbe rof lecture in the course
@@ -77,19 +122,40 @@ export const AppContextProvider = (props: AppContextProviderProps) => {
 
   //fetch user Enrolled courses#
   const fetchUserEnrolledCourses = async () => {
-    setEnrolledCourses(dummyCourses);
-  };
-  useEffect(() => {
-    fetchAllCourses();
-    fetchUserEnrolledCourses();
-  }, []);
+    try {
+      const token = await getToken();
+      const { data } = await axios.get(
+        backendUrl + "/api/user/enrolled-courses",
+        { headers: { Authorization: "Bearer " + token } }
+      );
 
-  const logToken = async () => {
+      if (data.success) {
+        setEnrolledCourses(data.enrolledCourses.reverse());
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unknown error occurred fetching enrolled courses");
+      }
+    }
+  };
+
+  const getTokens = async () => {
     console.log(await getToken());
   };
+
+  useEffect(() => {
+    fetchAllCourses();
+    getTokens();
+  }, []);
+
   useEffect(() => {
     if (user) {
-      logToken();
+      fetchUserData();
+      fetchUserEnrolledCourses();
     }
   }, [user]);
 
@@ -107,6 +173,11 @@ export const AppContextProvider = (props: AppContextProviderProps) => {
     enrolledCourses,
     setEnrolledCourses,
     fetchUserEnrolledCourses,
+    backendUrl,
+    userData,
+    setUserData,
+    getToken,
+    fetchAllCourses,
   };
 
   return (
