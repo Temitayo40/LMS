@@ -4,10 +4,10 @@ const lectureSchema = new mongoose.Schema(
   {
     lectureId: { type: String, required: true },
     lectureTitle: { type: String, required: true },
-    lectureDuration: { type: String, required: true },
+    lectureDuration: { type: Number, required: true },
     lectureUrl: { type: String, required: true },
     isPreviewFree: { type: Boolean, required: true },
-    lectureOrder: { type: String, required: true },
+    lectureOrder: { type: Number, required: true },
   },
   { _id: false }
 );
@@ -15,7 +15,7 @@ const lectureSchema = new mongoose.Schema(
 const chapterSchema = new mongoose.Schema(
   {
     chapterId: { type: String, required: true },
-    chapterOrder: { type: String, required: true },
+    chapterOrder: { type: Number, required: true },
     chapterTitle: { type: String, required: true },
     chapterContent: [lectureSchema],
   },
@@ -27,7 +27,7 @@ const courseSchema = new mongoose.Schema(
     courseTitle: { type: String, required: true },
     courseDescription: { type: String, required: true },
     courseContent: [chapterSchema],
-    courseThumbnail: { type: String, required: true },
+    courseThumbnail: { type: String },
     coursePrice: { type: Number, required: true },
     isPublished: { type: Boolean, required: true },
     discount: { type: Number, required: true, min: 0, max: 100 },

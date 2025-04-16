@@ -1,12 +1,12 @@
 import Quill from "quill";
-import { RefObject, useContext, useEffect, useRef, useState } from "react";
+import {RefObject, useContext, useEffect, useRef, useState} from "react";
 import uniqid from "uniqid";
-import { assets } from "../../assets/assets";
-import { Chapter, Lecture, LectureDetails } from "../../Model/AddCourses";
-import { AppContext } from "../../context/AppContext";
-import { toast } from "react-toastify";
+import {assets} from "../../assets/assets";
+import {Chapter, Lecture, LectureDetails} from "../../Model/AddCourses";
+import {AppContext} from "../../context/AppContext";
+import {toast} from "react-toastify";
 import axios from "axios";
-import { handleError } from "../../lib/Error";
+import {handleError} from "../../lib/Error";
 
 const AddCourse = () => {
   const context = useContext(AppContext);
@@ -401,7 +401,7 @@ const AddCourse = () => {
         </div>
         <button
           type="submit"
-          className="bg-block text-white w-max py-2.5 px-8 rounded my-4"
+          className="bg-black text-white w-max py-2.5 px-8 rounded my-4"
         >
           ADD
         </button>

@@ -19,5 +19,5 @@ export interface Lecture {
   lectureUrl: string;
   isPreviewFree: boolean;
   lectureOrder: number;
-  lectureId: number;
+  lectureId: string;
 }

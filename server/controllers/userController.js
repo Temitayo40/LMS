@@ -1,6 +1,6 @@
 import Course from "../models/Course.js";
-import { CourseProgress } from "../models/CourseProgress.js";
-import { Purchase } from "../models/Purchase.js";
+import {CourseProgress} from "../models/CourseProgress.js";
+import {Purchase} from "../models/Purchase.js";
 import User from "../models/User.js";
 import Stripe from "stripe";
 
@@ -9,9 +9,7 @@ export const getUserData = async (req, res) => {
     const userId = req.auth.userId;
     const user = await User.findById(userId);
     if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+      return res.json({ success: false, message: "User not found" });
     }
 
     res.json({ success: true, user });
@@ -41,14 +39,12 @@ export const purchaseData = async (req, res) => {
     const courseData = await Course.findById(courseId);
 
     if (!userData || !courseData) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Data not found" });
+      return res.json({ success: false, message: "Data not found" });
     }
 
     const purchaseData = {
-      userId,
       courseId: courseData._id,
+      userId,
       amount: Number(
         (
           courseData.coursePrice -
@@ -77,11 +73,10 @@ export const purchaseData = async (req, res) => {
     ];
 
     const session = await stripeInstance.checkout.sessions.create({
-      // payment_method_types: ["card"],
-      line_items,
-      mode: "payment",
       success_url: `${origin}/loading/my-enrollments`,
       cancel_url: `${origin}/`,
+      line_items: line_items,
+      mode: "payment",
       metadata: {
         purchaseId: newPurchase._id.toString(),
       },

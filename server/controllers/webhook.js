@@ -1,7 +1,7 @@
-import { Webhook } from "svix";
+import {Webhook} from "svix";
 import User from "../models/User.js";
 import Stripe from "stripe";
-import { Purchase } from "../models/Purchase.js";
+import {Purchase} from "../models/Purchase.js";
 import Course from "../models/Course.js";
 
 export const clerkWebhooks = async (req, res) => {
@@ -38,7 +38,7 @@ export const clerkWebhooks = async (req, res) => {
         const userData = {
           email: data.email_addresses[0].email_address,
           name: `${data.first_name} ${data.last_name}`,
-          imageUrl: data.image_Url,
+          imageUrl: data.image_url,
         };
 
         await User.findByIdAndUpdate(data.id, userData);
