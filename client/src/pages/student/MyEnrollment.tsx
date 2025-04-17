@@ -1,9 +1,8 @@
-import { useContext, useEffect, useState } from "react";
-import { AppContext } from "../../context/AppContext";
-import { Line } from "rc-progress";
+import {useContext, useEffect, useState} from "react";
+import {AppContext} from "../../context/AppContext";
+import {Line} from "rc-progress";
 import Footer from "../../components/student/Footer";
-import { data } from "react-router-dom";
-import { toast } from "react-toastify";
+import {toast} from "react-toastify";
 import axios from "axios";
 
 const MyEnrollment = () => {
@@ -35,7 +34,7 @@ const MyEnrollment = () => {
             { headers: { Authorization: `Bearer ${token}` } }
           );
           const totalLectures = calculateNoOfLectures(course);
-          const lectureCompleted = data.progressData
+          const lectureCompleted = data.progressData?.lectureCompleted
             ? data.progressData.lectureCompleted.length
             : 0;
 

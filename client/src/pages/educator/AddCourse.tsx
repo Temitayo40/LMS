@@ -219,7 +219,7 @@ const AddCourse = () => {
                 accept="image/*"
                 hidden
               />
-              <img src={image ? URL.createObjectURL(image) : ""} alt="" />
+              <img src={image ? URL.createObjectURL(image) : ""} alt="" className={image ? `h-25 w-40 mt-2`: ''} />
             </label>
           </div>
         </div>

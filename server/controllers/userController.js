@@ -29,7 +29,7 @@ export const userEnrolledCourses = async (req, res) => {
   }
 };
 
-export const purchaseData = async (req, res) => {
+export const purchaseData = async (req, res) =>  {
   try {
     const { courseId } = req.body;
     const { origin } = req.headers;

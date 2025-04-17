@@ -1,8 +1,11 @@
-import { useContext, useEffect, useState } from "react";
-import { AppContext } from "../../context/AppContext";
-import { assets, dummyDashboardData } from "../../assets/assets";
+import {useContext, useEffect, useState} from "react";
+import {AppContext} from "../../context/AppContext";
+import {assets} from "../../assets/assets";
 import Loading from "../../components/student/Loading";
-import { DashboardModel } from "../../Model/DashboardModel.ts";
+import {DashboardModel} from "../../Model/DashboardModel.ts";
+import axios from "axios";
+import {toast} from "react-toastify";
+import {handleError} from "../../lib/Error.tsx";
 
 const Dashboard = () => {
   const context = useContext(AppContext);
@@ -11,16 +14,34 @@ const Dashboard = () => {
     throw new Error("DashboardModel must be used within an AppContextProvider");
   }
 
-  // const { currency } = context;
+  const { currency, backendUrl, isEducator, getToken } = context;
   const [dashboardData, setDashboardData] = useState<DashboardModel>();
 
   const fetchDashboardData = async () => {
-    setDashboardData(dummyDashboardData);
+try {
+  const token = await getToken();
+  const {data}  =await axios.get(backendUrl + "/api/educator/dashboard", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
+
+  if(data.success) {
+    setDashboardData(data.dashboardData);
+  }else {
+    toast.error(data.message);
+  }
+} catch (e: unknown) {
+  handleError(e);
+
+}
   };
 
   useEffect(() => {
+    if(isEducator){
     fetchDashboardData();
-  }, []);
+    }
+  }, [isEducator]);
   return dashboardData ? (
     <div className="min-h-screen flex flex-col items-start justify-between gap-8 md:p-8 md:pb-0 p-4 pt-8 pb-0">
       <div className="space-y-5">
@@ -47,7 +68,7 @@ const Dashboard = () => {
             <img src={assets.earning_icon} alt="earning_icon" />
             <div>
               <p className="text-2xl font-medium text-gray-600">
-                {dashboardData.totalEarnings}
+                {currency} {dashboardData.totalEarnings}
               </p>
               <p className="text-base text-gray-500">Total Earnings</p>
             </div>

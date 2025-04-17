@@ -1,12 +1,13 @@
-import { createContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Course, CourseContent, CourseRating, Courses } from "../Model/Courses";
+import {createContext, useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {Course, CourseContent, CourseRating, Courses} from "../Model/Courses";
 import humanizedDuration from "humanize-duration";
-import { useAuth, useUser } from "@clerk/clerk-react";
+import {useAuth, useUser} from "@clerk/clerk-react";
 import axios from "axios";
-import { toast } from "react-toastify";
-import { handleError } from "../lib/Error";
-import { UserInterface } from "../Model/User";
+import {toast} from "react-toastify";
+import {handleError} from "../lib/Error";
+import {UserInterface} from "../Model/User";
+
 interface AppContextType {
   currency: string | undefined;
   allCourses: Courses;
@@ -134,12 +135,8 @@ export const AppContextProvider = (props: AppContextProviderProps) => {
       } else {
         toast.error(data.message);
       }
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An unknown error occurred fetching enrolled courses");
-      }
+    } catch (error: unknown) {
+     handleError(error)
     }
   };
 

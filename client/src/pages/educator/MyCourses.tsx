@@ -1,7 +1,9 @@
-import { useContext, useEffect, useState } from "react";
-import { AppContext } from "../../context/AppContext";
+import {useContext, useEffect, useState} from "react";
+import {AppContext} from "../../context/AppContext";
 import Loading from "../../components/student/Loading";
-import { Courses } from "../../Model/Courses";
+import {Courses} from "../../Model/Courses";
+import {handleError} from "../../lib/Error.tsx";
+import axios from "axios";
 
 const MyCourses = () => {
   const context = useContext(AppContext);
@@ -10,16 +12,34 @@ const MyCourses = () => {
     throw new Error("context must be used within an AppContextProvider");
   }
 
-  const { currency, allCourses } = context;
+  const { currency, backendUrl,isEducator, getToken } = context;
   const [courses, setCourses] = useState<Courses>();
 
   const fetchEducatorCourses = async () => {
-    setCourses(allCourses);
-  };
+
+      try {
+        const token = await  getToken()
+        const {data} = await axios.get(backendUrl + "/api/educator/courses", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        })
+        if(data.success) {
+          setCourses(data.courses);
+        }
+
+      }catch (error: unknown) {
+        handleError(error)
+
+      }
+   };
 
   useEffect(() => {
+    if(isEducator){
     fetchEducatorCourses();
-  }, []);
+
+    }
+  }, [isEducator]);
 
   return courses ? (
     <div className="h-screen flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
