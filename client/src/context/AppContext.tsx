@@ -102,16 +102,26 @@ export const AppContextProvider = (props: AppContextProviderProps) => {
     };
 
     // to calacu;ate Course Duration
-    const calculateCourseDuration = (course: Course) => {
+    const calculateCourseDuration = (course: Course): string => {
         let time = 0;
-        course.courseContent.map((chapter) =>
-            chapter.chapterContent.map((lecture) => (time += lecture.lectureDuration))
+        course.courseContent.forEach((chapter) =>
+            chapter.chapterContent.forEach((lecture) => {
+                time += lecture.lectureDuration;
+            })
         );
-        return time; // Return duration in minutes as a number
+
+        // Format time
+        if (time < 60) {
+            return `${time} minute${time === 1 ? '' : 's'}`;
+        } else {
+            const hours = Math.floor(time / 60);
+            const minutes = time % 60;
+            return `${hours} hour${hours === 1 ? '' : 's'}${minutes > 0 ? ` ${minutes} minute${minutes === 1 ? '' : 's'}` : ''}`;
+        }
     };
 
-    //calculate numbe rof lecture in the course
 
+    //calculate number rof lecture in the course
     const calculateNoOfLectures = (course: Course) => {
         let totalLEcture = 0;
         course.courseContent.forEach((chapter) => {
