@@ -32,6 +32,7 @@ const TestimonialsSection = () => {
               <div className="flex gap-0.5">
                 {[...Array(5)].map((_, index) => (
                   <img
+                    key={index}
                     src={
                       index < Math.floor(dummy.rating)
                         ? assets.star
