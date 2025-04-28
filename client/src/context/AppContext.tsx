@@ -15,7 +15,7 @@ interface AppContextType {
   navigate: ReturnType<typeof useNavigate>;
   calculateRating: (course: Course) => number;
   calculateNoOfLectures: (course: Course) => number;
-  calculateCourseDuration: (course: Course) => number;
+  calculateCourseDuration: (course: Course) => string;
   calculateChapterTime: (chapter: CourseContent) => string;
   isEducator: boolean;
   setIsEducator: React.Dispatch<React.SetStateAction<boolean>>;

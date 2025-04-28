@@ -11,6 +11,7 @@ export interface Course {
   educator: { name: string };
   enrolledStudents: string[];
   courseRatings: CourseRating[];
+
   createdAt: string;
   updatedAt: string;
 
